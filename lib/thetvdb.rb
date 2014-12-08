@@ -20,18 +20,18 @@ class Thetvdb
   end
 
   def lookup_all_episodes(show_id)
-    self.class.get("/#{@api_key}/series/#{show_id}/en.xml")["Data"]["Episode"]
+    self.class.get("/#{@api_key}/series/#{show_id}/all/en.xml")["Data"]["Episode"]
   end
 
   def lookup_actors(show_id)
-    self.class.get("/#{@api_key}/series/#{show_id}/actor.xml")["Actors"]["Actor"]
+    self.class.get("/#{@api_key}/series/#{show_id}/actors.xml")["Actors"]["Actor"]
   end
 
   def lookup_banners(show_id)
     self.class.get("/#{@api_key}/series/#{show_id}/banners.xml")["Banners"]["Banner"]
   end
 
-  def lookup_episode_date(date)
-    self.class.get("/#{@api_key}/episodes/#{episode_id}/en.xml")["Data"]["Episode"]
+  def lookup_episode_date(series_id, date)
+    self.class.get("/GetEpisodeByAirDate.php?apikey=#{@api_key}&seriesid=#{series_id}&airdate=#{date}")["Data"]["Episode"]
   end
 end
