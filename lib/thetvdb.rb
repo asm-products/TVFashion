@@ -8,7 +8,17 @@ class Thetvdb
   end
 
   def search_show(show_name)
-    self.class.get("/GetSeries.php", {:query => {:seriesname => show_name, :language => 'en'}})["Data"]["Series"]
+    results = self.class.get("/GetSeries.php", {:query => {:seriesname => show_name, :language => 'en'}})
+      if results.nil? 
+        return []
+      else
+        results = results["Data"]["Series"]
+          if results.kind_of?(Array)
+            return results
+          else 
+            return [results]
+          end
+      end
   end
 
   def lookup_show(show_id)

@@ -1,6 +1,7 @@
+require 'thetvdb'
 class ShowsController < ApplicationController
   before_action :set_show, only: [:show, :edit, :update, :destroy]
-
+  respond_to :json
   # GET /shows
   # GET /shows.json
   def index
@@ -24,17 +25,16 @@ class ShowsController < ApplicationController
   # POST /shows
   # POST /shows.json
   def create
-    @show = Show.new(show_params)
+    @show = Show.new
+    api = Thetvdb.new
+    data = api.lookup_show(params[:show_id])
+    @show.tvdb_id = data['id']
+    @show.name = data['SeriesName']
+    @show.overview = data['Overview']
+    @show.save
+    #redirect_to @show, notice: 'Show was successfully created.'
+    render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
 
-    respond_to do |format|
-      if @show.save
-        format.html { redirect_to @show, notice: 'Show was successfully created.' }
-        format.json { render :show, status: :created, location: @show }
-      else
-        format.html { render :new }
-        format.json { render json: @show.errors, status: :unprocessable_entity }
-      end
-    end
   end
 
   # PATCH/PUT /shows/1
