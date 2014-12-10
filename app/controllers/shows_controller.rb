@@ -2,28 +2,18 @@ require 'thetvdb'
 class ShowsController < ApplicationController
   before_action :set_show, only: [:show, :edit, :update, :destroy]
   respond_to :json
-  # GET /shows
-  # GET /shows.json
+
   def index
     @shows = Show.all
   end
 
-  # GET /shows/1
-  # GET /shows/1.json
   def show
   end
 
-  # GET /shows/new
   def new
     @show = Show.new
   end
 
-  # GET /shows/1/edit
-  def edit
-  end
-
-  # POST /shows
-  # POST /shows.json
   def create
     @show = Show.new
     api = Thetvdb.new
@@ -32,27 +22,12 @@ class ShowsController < ApplicationController
     @show.name = data['SeriesName']
     @show.overview = data['Overview']
     @show.save
-    #redirect_to @show, notice: 'Show was successfully created.'
     render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
-
   end
 
-  # PATCH/PUT /shows/1
-  # PATCH/PUT /shows/1.json
   def update
-    respond_to do |format|
-      if @show.update(show_params)
-        format.html { redirect_to @show, notice: 'Show was successfully updated.' }
-        format.json { render :show, status: :ok, location: @show }
-      else
-        format.html { render :edit }
-        format.json { render json: @show.errors, status: :unprocessable_entity }
-      end
-    end
   end
 
-  # DELETE /shows/1
-  # DELETE /shows/1.json
   def destroy
     @show.destroy
     respond_to do |format|
