@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141210033154) do
+ActiveRecord::Schema.define(version: 20141210035956) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 20141210033154) do
     t.date     "airs_first"
     t.string   "imdb_id"
     t.string   "language"
-    t.decimal  "rating"
+    t.float    "rating"
     t.integer  "rating_count"
     t.integer  "runtime"
     t.string   "status"

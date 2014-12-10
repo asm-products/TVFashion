@@ -27,15 +27,16 @@ class ShowsController < ApplicationController
     @show.airs_first = data['FirstAired']
     @show.imdb_id = data['IMDB_ID']
     @show.language = data['Language']
-    @show.rating = data['Rating']
-    @show.rating_count = data['RatingCount']
-    @show.runtime = data['Runtime']
+    @show.rating = data['Rating'].to_f
+    @show.rating_count = data['RatingCount'].to_i
+    @show.runtime = data['Runtime'].to_i
     @show.status = data['Status']
     @show.banner = 'http://thetvdb.com/banners/'+data['banner']
     @show.fanart = 'http://thetvdb.com/banners/'+data['fanart']
     @show.poster = 'http://thetvdb.com/banners/'+data['poster']
     @show.network = data['Network']
     @show.genre = data['Genre'].split('|')
+    @show.genre.shift #this is to get rid of the first empty
     @show.last_updated = DateTime.strptime(api.get_datetime(),'%s')
     
     @show.save
