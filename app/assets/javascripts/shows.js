@@ -12,7 +12,7 @@ ready = function() {
       data: form.serialize(),
       dataType: 'JSON',
       success: function(response) {
-        console.log(response)
+        $('#search_form').hide();
         $.each(response, function(i, data) {
           $('#found_shows').append(
             $('<li>').append(
@@ -21,7 +21,8 @@ ready = function() {
                   $('<span>').attr('class', 'showDate').append(' - ('+data.FirstAired+')') 
                 )))
               );  
-        });     
+        }); 
+        $('#found_shows').after($('<a>').attr('href', 'new').append('Search Again'));
         $('#found_shows').on('click','#found_show', function(e) {
           e.preventDefault();
           var show_link = $(this);
