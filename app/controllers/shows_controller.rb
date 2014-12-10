@@ -18,9 +18,26 @@ class ShowsController < ApplicationController
     @show = Show.new
     api = Thetvdb.new
     data = api.lookup_show(params[:show_id])
-    @show.tvdb_id = data['id']
     @show.name = data['SeriesName']
     @show.overview = data['Overview']
+    @show.tvdb_id = data['id']
+    @show.airs_day = data['Airs_DayOfWeek']
+    @show.airs_time = data['Airs_Time']
+    @show.content_rating = data['ContentRating']
+    @show.airs_first = data['FirstAired']
+    @show.imdb_id = data['IMDB_ID']
+    @show.language = data['Language']
+    @show.rating = data['Rating']
+    @show.rating_count = data['RatingCount']
+    @show.runtime = data['Runtime']
+    @show.status = data['Status']
+    @show.banner = 'http://thetvdb.com/banners/'+data['banner']
+    @show.fanart = 'http://thetvdb.com/banners/'+data['fanart']
+    @show.poster = 'http://thetvdb.com/banners/'+data['poster']
+    @show.network = data['Network']
+    @show.genre = data['Genre'].split('|')
+    @show.last_updated = DateTime.strptime(api.get_datetime(),'%s')
+    
     @show.save
     render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
   end

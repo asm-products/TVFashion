@@ -44,4 +44,8 @@ class Thetvdb
   def lookup_episode_date(series_id, date)
     self.class.get("/GetEpisodeByAirDate.php?apikey=#{@api_key}&seriesid=#{series_id}&airdate=#{date}")["Data"]["Episode"]
   end
+    
+  def get_datetime()
+    self.class.get("/Updates.php?type=none")['Items']['Time']
+  end
 end

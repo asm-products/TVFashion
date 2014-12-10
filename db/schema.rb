@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141206232700) do
+ActiveRecord::Schema.define(version: 20141210033154) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,23 @@ ActiveRecord::Schema.define(version: 20141206232700) do
     t.string   "tvdb_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "airs_day"
+    t.string   "airs_time"
+    t.string   "content_rating"
+    t.date     "airs_first"
+    t.string   "imdb_id"
+    t.string   "language"
+    t.decimal  "rating"
+    t.integer  "rating_count"
+    t.integer  "runtime"
+    t.string   "status"
+    t.string   "banner"
+    t.string   "fanart"
+    t.string   "poster"
+    t.datetime "last_updated"
+    t.text     "genre",          default: [], array: true
+    t.text     "season_posters", default: [], array: true
+    t.string   "network"
   end
 
 end
