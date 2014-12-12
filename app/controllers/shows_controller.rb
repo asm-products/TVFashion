@@ -34,27 +34,11 @@ class ShowsController < ApplicationController
     @show.rating_count = show_data['RatingCount'].to_i
     @show.runtime = show_data['Runtime'].to_i
     @show.status = show_data['Status']
-    if show_data['banner'].nil?
-      @show.banner = nil
-    else
-      @show.banner = 'http://thetvdb.com/banners/'+show_data['banner']
-    end
-    if show_data['fanart'].nil?
-      @show.fanart = nil
-    else
-      @show.fanart = 'http://thetvdb.com/banners/'+show_data['fanart']
-    end
-    if show_data['poster'].nil?
-      @show.poster = nil
-    else
-      @show.poster = 'http://thetvdb.com/banners/'+show_data['poster']
-    end
+    @show.banner = 'http://thetvdb.com/banners/'+show_data['banner'] unless show_data['banner'].blank?
+    @show.fanart = 'http://thetvdb.com/banners/'+show_data['fanart'] unless show_data['fanart'].blank?
+    @show.poster = 'http://thetvdb.com/banners/'+show_data['poster'] unless show_data['poster'].blank?
     @show.network = show_data['Network']
-    if show_data['Genre'].nil?
-      @show.genre = nil
-    else
-      @show.genre = show_data['Genre'].split('|').reject(&:empty?)
-    end
+    @show.genre = show_data['Genre'].split('|').reject(&:empty?) unless show_data['Genre'].blank?
     @show.last_updated = current_date
     @show.save
     #route to to new show and do the rest in the background
@@ -64,11 +48,7 @@ class ShowsController < ApplicationController
       act = @show.actors.new
       act.name = a['Name']
       act.tvdb_id = a['id']
-      if a['Image'].nil?
-        act.image = nil
-      else
-        act.image = 'http://thetvdb.com/banners/'+a['Image']
-      end
+      act.image = 'http://thetvdb.com/banners/'+a['Image'] unless a['Image'].blank?
       act.role = a['Role']
       act.sort_order = a['SortOrder'].to_i
       act.last_updated = current_date
@@ -91,30 +71,14 @@ class ShowsController < ApplicationController
           ep.overview = e['Overview']
           ep.rating = e['Rating'].to_f
           ep.rating_count = e['RatingCount'].to_i
-          if e['filename'].nil?
-            ep.image = nil
-          else
-            ep.image = 'http://thetvdb.com/banners/'+e['filename']
-          end
+          ep.image = 'http://thetvdb.com/banners/'+e['filename'] unless e['filename'].blank?
           ep.image_height = e['thumb_height']
           ep.image_width = e['thumb_width']
           ep.season_id = e['seasonid']
           ep.last_updated = current_date
-          if e['Director'].nil?
-            ep.directors = nil
-          else
-            ep.directors = e['Director'].split('|').reject(&:empty?)
-          end
-          if e['GuestStars'].nil?
-            ep.guest_stars = nil
-          else
-            ep.guest_stars = e['GuestStars'].split('|').reject(&:empty?)
-          end
-          if e['Writer'].nil?
-            ep.writers = nil
-          else
-            ep.writers = e['Writer'].split('|').reject(&:empty?)
-          end
+          ep.directors = e['Director'].split('|').reject(&:empty?) unless e['Director'].blank?
+          ep.guest_stars = e['GuestStars'].split('|').reject(&:empty?) unless e['GuestStars'].blank?
+          ep.writers = e['Writer'].split('|').reject(&:empty?) unless e['Writer'].blank?
 
           ep.save
         end
