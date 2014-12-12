@@ -15,9 +15,12 @@ class ShowsController < ApplicationController
   end
 
   def create
+    #Add check if show in db already, if so re-route to show mage and say show already here
+
     @show = Show.new
     api = Thetvdb.new
     show_data = api.lookup_show(params[:show_id])
+    current_date = DateTime.strptime(api.get_datetime(),'%s')
     @show.name = show_data['SeriesName']
     @show.overview = show_data['Overview']
     @show.tvdb_id = show_data['id']
@@ -47,10 +50,14 @@ class ShowsController < ApplicationController
       @show.poster = 'http://thetvdb.com/banners/'+show_data['poster']
     end
     @show.network = show_data['Network']
-    @show.genre = show_data['Genre'].split('|')
-    @show.genre.shift #this is to get rid of the first empty
-    @show.last_updated = DateTime.strptime(api.get_datetime(),'%s')
+    if show_data['Genre'].nil?
+      @show.genre = nil
+    else
+      @show.genre = show_data['Genre'].split('|').reject(&:empty?)
+    end
+    @show.last_updated = current_date
     @show.save
+    #route to to new show and do the rest in the background
 
     act_data = api.lookup_actors(params[:show_id])
     act_data.each do |a|
@@ -64,9 +71,58 @@ class ShowsController < ApplicationController
       end
       act.role = a['Role']
       act.sort_order = a['SortOrder'].to_i
-      act.last_updated = DateTime.strptime(api.get_datetime(),'%s')
+      act.last_updated = current_date
       act.save
     end
+
+    ep_data = api.lookup_all_episodes(params[:show_id])
+    ep_data.each do |e|
+      unless e['FirstAired'].nil?
+        if Date.parse(e['FirstAired']) < Date.today
+          puts e['FirstAired']
+          ep = @show.episodes.new
+          ep.tvdb_id = e['id']
+          ep.episode_number = e['EpisodeNumber']
+          ep.season_number = e['SeasonNumber']
+          ep.name = e['EpisodeName']
+          ep.aired = Date.parse(e['FirstAired'])
+          ep.imdb_id = e['IMDB_ID']
+          ep.language = e['Language']
+          ep.overview = e['Overview']
+          ep.rating = e['Rating'].to_f
+          ep.rating_count = e['RatingCount'].to_i
+          if e['filename'].nil?
+            ep.image = nil
+          else
+            ep.image = 'http://thetvdb.com/banners/'+e['filename']
+          end
+          ep.image_height = e['thumb_height']
+          ep.image_width = e['thumb_width']
+          ep.season_id = e['seasonid']
+          ep.last_updated = current_date
+          if e['Director'].nil?
+            ep.directors = nil
+          else
+            ep.directors = e['Director'].split('|').reject(&:empty?)
+          end
+          if e['GuestStars'].nil?
+            ep.guest_stars = nil
+          else
+            ep.guest_stars = e['GuestStars'].split('|').reject(&:empty?)
+          end
+          if e['Writer'].nil?
+            ep.writers = nil
+          else
+            ep.writers = e['Writer'].split('|').reject(&:empty?)
+          end
+
+          ep.save
+        end
+      end
+    end
+
+
+    #Add season poster lookup loop
 
     render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
   end

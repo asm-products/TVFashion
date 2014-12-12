@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141212045447) do
+ActiveRecord::Schema.define(version: 20141212173514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,32 @@ ActiveRecord::Schema.define(version: 20141212045447) do
   end
 
   add_index "actors", ["show_id"], name: "index_actors_on_show_id", using: :btree
+
+  create_table "episodes", force: true do |t|
+    t.string   "tvdb_id"
+    t.integer  "episode_number"
+    t.integer  "season_number"
+    t.string   "name"
+    t.string   "imdb_id"
+    t.string   "language"
+    t.text     "overview"
+    t.float    "rating"
+    t.integer  "rating_count"
+    t.string   "image"
+    t.integer  "image_height"
+    t.integer  "image_width"
+    t.string   "season_id"
+    t.datetime "last_updated"
+    t.text     "directors",      default: [], array: true
+    t.text     "guest_stars",    default: [], array: true
+    t.text     "writers",        default: [], array: true
+    t.integer  "show_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.date     "aired"
+  end
+
+  add_index "episodes", ["show_id"], name: "index_episodes_on_show_id", using: :btree
 
   create_table "shows", force: true do |t|
     t.string   "name"
