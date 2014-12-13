@@ -19,80 +19,12 @@ class ShowsController < ApplicationController
 
     @show = Show.new
     api = Thetvdb.new
-    show_data = api.lookup_show(params[:show_id])
-    current_date = DateTime.strptime(api.get_datetime(),'%s')
-    @show.name = show_data['SeriesName']
-    @show.overview = show_data['Overview']
-    @show.tvdb_id = show_data['id']
-    @show.airs_day = show_data['Airs_DayOfWeek']
-    @show.airs_time = show_data['Airs_Time']
-    @show.content_rating = show_data['ContentRating']
-    @show.airs_first = show_data['FirstAired']
-    @show.imdb_id = show_data['IMDB_ID']
-    @show.language = show_data['Language']
-    @show.rating = show_data['Rating'].to_f
-    @show.rating_count = show_data['RatingCount'].to_i
-    @show.runtime = show_data['Runtime'].to_i
-    @show.status = show_data['Status']
-    @show.banner = 'http://thetvdb.com/banners/'+show_data['banner'] unless show_data['banner'].blank?
-    @show.fanart = 'http://thetvdb.com/banners/'+show_data['fanart'] unless show_data['fanart'].blank?
-    @show.poster = 'http://thetvdb.com/banners/'+show_data['poster'] unless show_data['poster'].blank?
-    @show.network = show_data['Network']
-    @show.genre = show_data['Genre'].split('|').reject(&:empty?) unless show_data['Genre'].blank?
-    @show.last_updated = current_date
-    @show.save
+    param_id=params[:show_id]
+    api.add_show(@show, api, param_id)
     #route to to new show and do the rest in the background
-
-    act_data = api.lookup_actors(params[:show_id])
-    act_data.each do |a|
-      act = @show.actors.new
-      act.name = a['Name']
-      act.tvdb_id = a['id']
-      act.image = 'http://thetvdb.com/banners/'+a['Image'] unless a['Image'].blank?
-      act.role = a['Role']
-      act.sort_order = a['SortOrder'].to_i
-      act.last_updated = current_date
-      act.save
-    end
-
-    ep_data = api.lookup_all_episodes(params[:show_id])
-    ep_data.each do |e|
-      unless e['FirstAired'].nil?
-        if Date.parse(e['FirstAired']) < Date.today
-          puts e['FirstAired']
-          ep = @show.episodes.new
-          ep.tvdb_id = e['id']
-          ep.episode_number = e['EpisodeNumber']
-          ep.season_number = e['SeasonNumber']
-          ep.name = e['EpisodeName']
-          ep.aired = Date.parse(e['FirstAired'])
-          ep.imdb_id = e['IMDB_ID']
-          ep.language = e['Language']
-          ep.overview = e['Overview']
-          ep.rating = e['Rating'].to_f
-          ep.rating_count = e['RatingCount'].to_i
-          ep.image = 'http://thetvdb.com/banners/'+e['filename'] unless e['filename'].blank?
-          ep.image_height = e['thumb_height']
-          ep.image_width = e['thumb_width']
-          ep.season_id = e['seasonid']
-          ep.last_updated = current_date
-          ep.directors = e['Director'].split('|').reject(&:empty?) unless e['Director'].blank?
-          ep.guest_stars = e['GuestStars'].split('|').reject(&:empty?) unless e['GuestStars'].blank?
-          ep.writers = e['Writer'].split('|').reject(&:empty?) unless e['Writer'].blank?
-
-          ep.save
-        end
-      end
-    end
-
-    season_count = @show.episodes.maximum('season_number')
-    banners = api.lookup_banners(params[:show_id])
-    season_banners = banners.select {|b| b['BannerType2'] == 'season'}
-    posters=[]
-    for i in 0..season_count
-      posters << 'http://thetvdb.com/banners/'+season_banners.select {|b| b['Season'] == i.to_s}.first['BannerPath']
-    end
-    @show.update_attribute(:season_posters, posters)
+    api.add_actors(@show, api, param_id)
+    api.add_episodes(@show, api, param_id)
+    api.add_season_posters(@show, api, param_id)
 
     render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
   end
