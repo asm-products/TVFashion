@@ -85,8 +85,14 @@ class ShowsController < ApplicationController
       end
     end
 
-
-    #Add season poster lookup loop
+    season_count = @show.episodes.maximum('season_number')
+    banners = api.lookup_banners(params[:show_id])
+    season_banners = banners.select {|b| b['BannerType2'] == 'season'}
+    posters=[]
+    for i in 0..season_count
+      posters << 'http://thetvdb.com/banners/'+season_banners.select {|b| b['Season'] == i.to_s}.first['BannerPath']
+    end
+    @show.update_attribute(:season_posters, posters)
 
     render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
   end
