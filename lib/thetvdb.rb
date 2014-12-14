@@ -93,7 +93,6 @@ class Thetvdb
     ep_data.each do |e|
       unless e['FirstAired'].nil?
         if Date.parse(e['FirstAired']) < Date.today
-          puts e['FirstAired']
           ep = show.episodes.new
           ep.tvdb_id = e['id']
           ep.episode_number = e['EpisodeNumber']

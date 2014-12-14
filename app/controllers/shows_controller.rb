@@ -29,6 +29,7 @@ class ShowsController < ApplicationController
       ActiveRecord::Base.connection.close
     end
     at_exit { t.join }
+    
     render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
   end
 
