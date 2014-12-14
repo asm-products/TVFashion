@@ -1,0 +1,9 @@
+<%= form_tag new_show_search_path, id: 'search_form', method: :get, remote: true do %>
+  <%= text_field_tag :query %>
+  <%= submit_tag 'Search' %>
+<% end %>
+
+<ol id='found_shows'>
+  
+  
+</ol>
