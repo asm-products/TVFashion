@@ -50,6 +50,7 @@ class Thetvdb
   end
 
   def add_show(show, api, id)
+    puts show.id
     show_data = api.lookup_show(id)
     show.name = show_data['SeriesName']
     show.overview = show_data['Overview']
@@ -64,13 +65,14 @@ class Thetvdb
     show.rating_count = show_data['RatingCount'].to_i
     show.runtime = show_data['Runtime'].to_i
     show.status = show_data['Status']
-    show.banner = 'http://thetvdb.com/banners/'+show_data['banner'] unless show_data['banner'].blank?
+    show.banner = Cloudinary::Uploader.upload('http://thetvdb.com/banners/'+show_data['banner'], :public_id => 'Shows/'+show.id.to_s+'/Banner')['public_id'] unless show_data['banner'].blank?
     show.fanart = 'http://thetvdb.com/banners/'+show_data['fanart'] unless show_data['fanart'].blank?
     show.poster = 'http://thetvdb.com/banners/'+show_data['poster'] unless show_data['poster'].blank?
     show.network = show_data['Network']
     show.genre = show_data['Genre'].split('|').reject(&:empty?) unless show_data['Genre'].blank?
     show.last_updated = DateTime.strptime(api.get_datetime(),'%s')
     show.save
+    puts show.id
     return show
   end
 
@@ -83,7 +85,7 @@ class Thetvdb
       act.image = 'http://thetvdb.com/banners/'+a['Image'] unless a['Image'].blank?
       act.role = a['Role']
       act.sort_order = a['SortOrder'].to_i
-      act.last_updated = DateTime.strptime(api.get_datetime(),'%s')
+      act.last_updated = show.last_updated
       act.save
     end
   end
@@ -108,7 +110,7 @@ class Thetvdb
           ep.image_height = e['thumb_height']
           ep.image_width = e['thumb_width']
           ep.season_id = e['seasonid']
-          ep.last_updated = DateTime.strptime(api.get_datetime(),'%s')
+          ep.last_updated = show.last_updated
           ep.directors = e['Director'].split('|').reject(&:empty?) unless e['Director'].blank?
           ep.guest_stars = e['GuestStars'].split('|').reject(&:empty?) unless e['GuestStars'].blank?
           ep.writers = e['Writer'].split('|').reject(&:empty?) unless e['Writer'].blank?
