@@ -3,7 +3,7 @@
 <ul>
   <% @shows.each do |show| %>
   <li>
-    <%= link_to image_tag(show.poster, size: "68x100"), show %>
+    <%= link_to cl_image_tag(show.poster, size: "68x100"), show %>
     <p><%= show.name %></p>
     <%= link_to 'Destroy', show, method: :delete, data: { confirm: 'Are you sure?' } %>
   </li>

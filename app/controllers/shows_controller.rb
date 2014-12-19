@@ -22,14 +22,15 @@ class ShowsController < ApplicationController
     param_id=params[:show_id]
     api.add_show(@show, api, param_id)
 
-    t = Thread.new do
+    # I would like to find a better way to do these in the background
+    #t = Thread.new do
       api.add_actors(@show, api, param_id)
       api.add_episodes(@show, api, param_id)
       api.add_season_posters(@show, api, param_id)
       ActiveRecord::Base.connection.close
-    end
-    at_exit { t.join }
-    
+    #end
+    #at_exit { t.join }
+
     render :show, status: :ok, location: @show, notice: 'Show was successfully created.'
   end
 

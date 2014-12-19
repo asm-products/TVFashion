@@ -1,8 +1,8 @@
 <p id="notice"><%= notice %></p>
 
-<%= image_tag(@show.poster, size: "136x200") %>
-<%= image_tag(@show.fanart, size: "360x210") %>
-<%= image_tag(@show.banner, size: "758x140") %>
+<%= cl_image_tag(@show.poster, size: "136x200") %>
+<%= cl_image_tag(@show.fanart, size: "360x210") %>
+<%= cl_image_tag(@show.banner, size: "758x140") %>
 <p>
   <strong>Name:</strong>
   <%= @show.name %>
